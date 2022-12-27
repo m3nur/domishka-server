@@ -8,7 +8,11 @@ const bookRouter = require("./routes/book");
 const cors = require("cors");
 const router = require("express").Router();
 const dotnv = require("dotenv").config();
-
+const corsOption = {
+  origin: "*",
+  credentials: true,
+  optionSuccessStatus: 200,
+};
 dbConnect();
 
 router.use(function (req, res, next) {
@@ -19,7 +23,8 @@ router.use(function (req, res, next) {
   );
   next();
 });
-app.use(cors());
+
+app.use(cors(corsOption));
 app.use(express.json());
 app.use("/auth", authRouter);
 app.use("/users", userRouter);
