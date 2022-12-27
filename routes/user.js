@@ -1,10 +1,10 @@
-const User = require('../model/User');
-const { verifyTokenAndAuth, verifyTokenAndAdmin } = require('./verifyJWT');
-
-const router = require('express').Router();
+const User = require("../model/User");
+const { verifyTokenAndAuth, verifyTokenAndAdmin } = require("./verifyJWT");
+const dotnv = require("dotenv").config();
+const router = require("express").Router();
 
 //UPDATE
-router.put('/:id', verifyTokenAndAuth, async (req, res) => {
+router.put("/:id", verifyTokenAndAuth, async (req, res) => {
   if (req.body.password) {
     req.body.password = CryptoJS.AES.encrypt(
       req.body.password,
@@ -27,17 +27,17 @@ router.put('/:id', verifyTokenAndAuth, async (req, res) => {
 });
 
 //DELETE
-router.delete('/:id', verifyTokenAndAuth, async (req, res) => {
+router.delete("/:id", verifyTokenAndAuth, async (req, res) => {
   try {
     await User.findByIdAndDelete(req.params.id);
-    res.status(200).json('User has been deleted!');
+    res.status(200).json("User has been deleted!");
   } catch (err) {
     res.status(500).json(err);
   }
 });
 
 //GET USER
-router.get('/find/:id', verifyTokenAndAdmin, async (req, res) => {
+router.get("/find/:id", verifyTokenAndAdmin, async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
     const { password, ...others } = user._doc;
@@ -48,7 +48,7 @@ router.get('/find/:id', verifyTokenAndAdmin, async (req, res) => {
 });
 
 //GET ALL USERS
-router.get('/', verifyTokenAndAdmin, async (req, res) => {
+router.get("/", verifyTokenAndAdmin, async (req, res) => {
   try {
     const users = await User.find();
     res.status(200).json(users);
@@ -58,7 +58,7 @@ router.get('/', verifyTokenAndAdmin, async (req, res) => {
 });
 
 //GET STATS
-router.get('/stats', verifyTokenAndAdmin, async (req, res) => {
+router.get("/stats", verifyTokenAndAdmin, async (req, res) => {
   const date = new Date();
   const lastYear = new Date(date.setFullYear(date.getFullYear() - 1));
 
@@ -67,12 +67,12 @@ router.get('/stats', verifyTokenAndAdmin, async (req, res) => {
       { $match: { createdAt: { $gte: lastYear } } },
       {
         $project: {
-          month: { $month: '$createdAt' },
+          month: { $month: "$createdAt" },
         },
       },
       {
         $group: {
-          _id: '$month',
+          _id: "$month",
           total: { $sum: 1 },
         },
       },

@@ -1,10 +1,11 @@
-const User = require('../model/User');
-const router = require('express').Router();
-const CryptoJS = require('crypto-js');
-const jwt = require('jsonwebtoken');
+const User = require("../model/User");
+const router = require("express").Router();
+const CryptoJS = require("crypto-js");
+const jwt = require("jsonwebtoken");
+const dotnv = require("dotenv").config();
 
 //REGISTRATION
-router.post('/register', async (req, res) => {
+router.post("/register", async (req, res) => {
   const newUser = new User({
     username: req.body.username,
     email: req.body.email,
@@ -17,7 +18,7 @@ router.post('/register', async (req, res) => {
   try {
     await newUser.save();
     const user = await User.findOne({ email: req.body.email });
-    !user && res.status(401).json('Wrong credentials!');
+    !user && res.status(401).json("Wrong credentials!");
 
     const hashedPassword = CryptoJS.AES.decrypt(
       user.password,
@@ -26,7 +27,7 @@ router.post('/register', async (req, res) => {
     const originPassword = hashedPassword.toString(CryptoJS.enc.Utf8);
 
     originPassword !== req.body.password &&
-      res.status(401).json('Wrong credentials!');
+      res.status(401).json("Wrong credentials!");
 
     const accessToken = jwt.sign(
       {
@@ -34,7 +35,7 @@ router.post('/register', async (req, res) => {
         isAdmin: user.isAdmin,
       },
       process.env.JWT_SEC,
-      { expiresIn: '10d' }
+      { expiresIn: "10d" }
     );
 
     const { password, ...others } = user._doc;
@@ -45,10 +46,10 @@ router.post('/register', async (req, res) => {
 });
 
 //LOGIN
-router.post('/login', async (req, res) => {
+router.post("/login", async (req, res) => {
   try {
     const user = await User.findOne({ email: req.body.email });
-    !user && res.status(401).json('Wrong credentials!');
+    !user && res.status(401).json("Wrong credentials!");
 
     const hashedPassword = CryptoJS.AES.decrypt(
       user.password,
@@ -57,7 +58,7 @@ router.post('/login', async (req, res) => {
     const originPassword = hashedPassword.toString(CryptoJS.enc.Utf8);
 
     originPassword !== req.body.password &&
-      res.status(401).json('Wrong credentials!');
+      res.status(401).json("Wrong credentials!");
 
     const accessToken = jwt.sign(
       {
@@ -65,7 +66,7 @@ router.post('/login', async (req, res) => {
         isAdmin: user.isAdmin,
       },
       process.env.JWT_SEC,
-      { expiresIn: '10d' }
+      { expiresIn: "30d" }
     );
 
     const { password, ...others } = user._doc;

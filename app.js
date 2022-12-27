@@ -7,6 +7,7 @@ const authRouter = require("./routes/auth");
 const bookRouter = require("./routes/book");
 const cors = require("cors");
 const router = require("express").Router();
+const dotnv = require("dotenv").config();
 
 dbConnect();
 
@@ -27,3 +28,4 @@ app.use("/books", bookRouter);
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+console.log(process.env.CONNECTION_URL);
