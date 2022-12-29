@@ -1,10 +1,10 @@
-const Book = require('../model/Book');
-const { verifyTokenAndAdmin } = require('./verifyJWT');
+const Book = require("../model/Book");
+const { verifyTokenAndAdmin } = require("./verifyJWT");
 
-const router = require('express').Router();
+const router = require("express").Router();
 
 //CREATE
-router.post('/', async (req, res) => {
+router.post("/", async (req, res) => {
   const newBook = new Book(req.body);
 
   try {
@@ -16,7 +16,7 @@ router.post('/', async (req, res) => {
 });
 
 //UPDATE
-router.put('/:id', verifyTokenAndAdmin, async (req, res) => {
+router.put("/:id", verifyTokenAndAdmin, async (req, res) => {
   try {
     const updatedBook = await Book.findByIdAndUpdate(
       req.params.id,
@@ -34,17 +34,17 @@ router.put('/:id', verifyTokenAndAdmin, async (req, res) => {
 });
 
 //DELETE
-router.delete('/:id', verifyTokenAndAdmin, async (req, res) => {
+router.delete("/:id", verifyTokenAndAdmin, async (req, res) => {
   try {
     await Book.findByIdAndDelete(req.params.id);
-    res.status(200).json('Book has been deleted!');
+    res.status(200).json("Book has been deleted!");
   } catch (err) {
     res.status(500).json(err);
   }
 });
 
 //GET BOOK
-router.get('/find/:id', async (req, res) => {
+router.get("/find/:id", async (req, res) => {
   try {
     const book = await Book.findById(req.params.id);
     res.status(200).json(book);
@@ -54,7 +54,7 @@ router.get('/find/:id', async (req, res) => {
 });
 
 //GET ALL BOOK
-router.get('/', async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     const products = await Book.find();
     res.status(200).json(products);

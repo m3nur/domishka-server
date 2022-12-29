@@ -1,9 +1,11 @@
 const User = require("../model/User");
-const { verifyTokenAndAuth, verifyTokenAndAdmin } = require("./verifyJWT");
+const { verifyTokenAndAdmin, verifyTokenAndAuth } = require("./verifyJWT");
+const jwt = require("jsonwebtoken");
+
 const router = require("express").Router();
 
 //UPDATE
-router.put("/:id", async (req, res) => {
+router.put("/:id", verifyTokenAndAuth, async (req, res) => {
   if (req.body.password) {
     req.body.password = CryptoJS.AES.encrypt(
       req.body.password,
@@ -19,14 +21,26 @@ router.put("/:id", async (req, res) => {
       },
       { new: true }
     );
-    res.status(200).json(updatedUser);
+
+    const accessToken = jwt.sign(
+      {
+        id: updatedUser._id,
+        isAdmin: updatedUser.isAdmin,
+      },
+      process.env.JWT_SEC,
+      { expiresIn: "30d" }
+    );
+
+    const { password, ...others } = updatedUser._doc;
+
+    res.status(200).json({ ...others, accessToken });
   } catch (err) {
     res.status(500).json(err);
   }
 });
 
 //DELETE
-router.delete("/:id", verifyTokenAndAuth, async (req, res) => {
+router.delete("/:id", verifyTokenAndAdmin, async (req, res) => {
   try {
     await User.findByIdAndDelete(req.params.id);
     res.status(200).json("User has been deleted!");
